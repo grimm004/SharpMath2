@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.Xna.Framework;
 
 namespace SharpMath2
@@ -67,7 +65,7 @@ namespace SharpMath2
             Area = Math.Abs(0.5f * det);
 
             float invDet = 1 / det;
-            InvContainsBasis = new float[4]
+            InvContainsBasis = new float[]
             {
                 invDet * d, -invDet * b, 
                 -invDet * c, invDet * a

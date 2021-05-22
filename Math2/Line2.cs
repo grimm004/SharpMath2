@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 
 namespace SharpMath2
@@ -309,21 +305,19 @@ namespace SharpMath2
         /// <param name="pos2">Origin of line 2</param>
         /// <param name="strict">If overlap is required for intersection</param>
         /// <returns>If line1 intersects line2</returns>
-        public static unsafe bool Intersects(Line2 line1, Line2 line2, Vector2 pos1, Vector2 pos2, bool strict)
+        public static bool Intersects(Line2 line1, Line2 line2, Vector2 pos1, Vector2 pos2, bool strict)
         {
-            if (Parallel(line1, line2))
+            if (!Parallel(line1, line2)) return GetIntersection(line1, line2, pos1, pos2, strict, out Vector2 _);
+            
+            if (!AlongInfiniteLine(line1, pos1, line2.Start + pos2))
+                return false;
+            
+            return CheckCoincidentIntersectionType(line1, line2, pos1, pos2) switch
             {
-                if (!AlongInfiniteLine(line1, pos1, line2.Start + pos2))
-                    return false;
-                LineInterType iType = CheckCoincidentIntersectionType(line1, line2, pos1, pos2);
-                if (iType == LineInterType.CoincidentNone)
-                    return false;
-                if (iType == LineInterType.CoincidentPoint)
-                    return !strict;
-                return true;
-            }
-
-            return GetIntersection(line1, line2, pos1, pos2, strict, out Vector2 pt);
+                LineInterType.CoincidentNone => false,
+                LineInterType.CoincidentPoint => !strict,
+                _ => true
+            };
         }
 
         /// <summary>
@@ -339,8 +333,9 @@ namespace SharpMath2
         /// <param name="pos2">The shift of the second line</param>
         /// <param name="strict">True if we should return true if pt is on an edge of a line as well
         /// as in the middle of the line. False to return true only if pt is really within the lines</param>
+        /// <param name="pt">Point of intersection</param>
         /// <returns>True if both segments contain the pt, false otherwise</returns>
-        public static unsafe bool GetIntersection(Line2 line1, Line2 line2, Vector2 pos1, Vector2 pos2, bool strict, out Vector2 pt)
+        public static bool GetIntersection(Line2 line1, Line2 line2, Vector2 pos1, Vector2 pos2, bool strict, out Vector2 pt)
         {
             // The infinite lines intersect at exactly one point. The segments intersect
             // if they both contain that point. We will treat the lines as first-degree
