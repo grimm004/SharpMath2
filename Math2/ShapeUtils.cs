@@ -61,7 +61,7 @@ namespace SharpMath2
 
             Points.Sort(
                 (a, b) =>
-                a.X == b.X ?
+                Math.Abs(a.X - b.X) < Math2.DEFAULT_EPSILON ?
                      a.Y.CompareTo(b.Y)
                 : (a.X > b.X ? 1 : -1)
              );

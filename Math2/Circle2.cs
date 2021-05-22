@@ -1,14 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SharpMath2
 {
     /// <summary>
     /// Describes a circle in the x-y plane.
     /// </summary>
-    public struct Circle2
+    public readonly struct Circle2
     {
         /// <summary>
         /// The radius of the circle
@@ -30,13 +28,8 @@ namespace SharpMath2
         /// <param name="c1">The first circle</param>
         /// <param name="c2">The second circle</param>
         /// <returns>If c1 is equal to c2</returns>
-        public static bool operator ==(Circle2 c1, Circle2 c2)
-        {
-            if (ReferenceEquals(c1, null) || ReferenceEquals(c2, null))
-                return ReferenceEquals(c1, c2);
-
-            return c1.Radius == c2.Radius;
-        }
+        public static bool operator ==(Circle2 c1, Circle2 c2) =>
+            Math.Abs(c1.Radius - c2.Radius) < Math2.DEFAULT_EPSILON;
 
         /// <summary>
         /// Determines if the first circle is not equal to the second circle
@@ -44,14 +37,9 @@ namespace SharpMath2
         /// <param name="c1">The first circle</param>
         /// <param name="c2">The second circle</param>
         /// <returns>If c1 is not equal to c2</returns>
-        public static bool operator !=(Circle2 c1, Circle2 c2)
-        {
-            if (ReferenceEquals(c1, null) || ReferenceEquals(c2, null))
-                return !ReferenceEquals(c1, c2);
+        public static bool operator !=(Circle2 c1, Circle2 c2) =>
+            Math.Abs(c1.Radius - c2.Radius) > Math2.DEFAULT_EPSILON;
 
-            return c1.Radius != c2.Radius;
-        }
-        
         /// <summary>
         /// Determines if this circle is logically the same as the 
         /// specified object.
@@ -60,10 +48,10 @@ namespace SharpMath2
         /// <returns>if it is a circle with the same radius</returns>
         public override bool Equals(object obj)
         {
-            if (obj.GetType() != typeof(Circle2))
+            if (obj == null || obj.GetType() != typeof(Circle2))
                 return false;
 
-            var other = (Circle2)obj;
+            var other = (Circle2) obj;
             return this == other;
         }
 
@@ -93,7 +81,7 @@ namespace SharpMath2
             else
                 return distSq <= circle.Radius * circle.Radius;
         }
-        
+
         /// <summary>
         /// Determines if the first circle at the specified position intersects the second circle
         /// at the specified position.
@@ -137,9 +125,9 @@ namespace SharpMath2
         /// <param name="pos1">Top-left of the first circles bounding box</param>
         /// <param name="pos2">Top-left of the second circles bounding box</param>
         /// <returns></returns>
-        public static Tuple<Vector2, float> IntersectMTV(Circle2 circle1, Circle2 circle2, Vector2 pos1, Vector2 pos2)
+        public static Tuple<Vector2, float> IntersectMtv(Circle2 circle1, Circle2 circle2, Vector2 pos1, Vector2 pos2)
         {
-            return IntersectMTV(circle1.Radius, circle2.Radius, pos1, pos2);
+            return IntersectMtv(circle1.Radius, circle2.Radius, pos1, pos2);
         }
 
         /// <summary>
@@ -152,21 +140,19 @@ namespace SharpMath2
         /// <param name="pos1"></param>
         /// <param name="pos2"></param>
         /// <returns>The direction and magnitude to move pos1 to prevent intersection</returns>
-        public static Tuple<Vector2, float> IntersectMTV(float radius1, float radius2, Vector2 pos1, Vector2 pos2)
+        public static Tuple<Vector2, float> IntersectMtv(float radius1, float radius2, Vector2 pos1, Vector2 pos2)
         {
             var betweenVec = pos1 - pos2;
             betweenVec.X += (radius1 - radius2);
             betweenVec.Y += (radius1 - radius2);
 
             var lengthSq = betweenVec.LengthSquared();
-            if(lengthSq < (radius1 + radius2) * (radius1 + radius2))
-            {
-                var len = Math.Sqrt(lengthSq);
-                betweenVec *= (float)(1 / len);
+            if (!(lengthSq < (radius1 + radius2) * (radius1 + radius2))) return null;
+            
+            var len = Math.Sqrt(lengthSq);
+            betweenVec *= (float) (1 / len);
 
-                return Tuple.Create(betweenVec, radius1 + radius2 - (float)len);
-            }
-            return null;
+            return Tuple.Create(betweenVec, radius1 + radius2 - (float) len);
         }
 
         /// <summary>

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SharpMath2
 {
@@ -54,7 +52,7 @@ namespace SharpMath2
         /// Theta will be normalized to 0 &lt;= theta &lt;= 2pi
         /// </summary>
         /// <param name="theta"></param>
-        public Rotation2(float theta) : this(theta, (float)Math.Cos(theta), (float)Math.Sin(theta))
+        public Rotation2(float theta) : this(theta, (float) Math.Cos(theta), (float) Math.Sin(theta))
         {
         }
 
@@ -64,13 +62,8 @@ namespace SharpMath2
         /// <param name="r1">First rotation</param>
         /// <param name="r2">Second rotation</param>
         /// <returns>if r1 and r2 are the same logical rotation</returns>
-        public static bool operator ==(Rotation2 r1, Rotation2 r2)
-        {
-            if (ReferenceEquals(r1, null) || ReferenceEquals(r2, null))
-                return ReferenceEquals(r1, r2);
-
-            return r1.Theta == r2.Theta;
-        }
+        public static bool operator ==(Rotation2 r1, Rotation2 r2) =>
+            Math.Abs(r1.Theta - r2.Theta) < Math2.DEFAULT_EPSILON;
 
         /// <summary>
         /// Determine if the two rotations are not the same
@@ -78,13 +71,8 @@ namespace SharpMath2
         /// <param name="r1">first rotation</param>
         /// <param name="r2">second rotation</param>
         /// <returns>if r1 and r2 are not the same logical rotation</returns>
-        public static bool operator !=(Rotation2 r1, Rotation2 r2)
-        {
-            if (ReferenceEquals(r1, null) || ReferenceEquals(r2, null))
-                return ReferenceEquals(r1, r2);
-
-            return r1.Theta != r2.Theta;
-        }
+        public static bool operator !=(Rotation2 r1, Rotation2 r2) =>
+            Math.Abs(r1.Theta - r2.Theta) > Math2.DEFAULT_EPSILON;
 
         /// <summary>
         /// Determine if obj is a rotation that is logically equal to this one
@@ -93,10 +81,10 @@ namespace SharpMath2
         /// <returns>if it is logically equal</returns>
         public override bool Equals(object obj)
         {
-            if (obj.GetType() != typeof(Rotation2))
+            if (obj == null || obj.GetType() != typeof(Rotation2))
                 return false;
 
-            return this == ((Rotation2)obj);
+            return this == (Rotation2) obj;
         }
 
         /// <summary>
@@ -126,14 +114,15 @@ namespace SharpMath2
         {
             if (theta < 0)
             {
-                int numToAdd = (int)Math.Ceiling((-theta) / (Math.PI * 2));
-                return theta + (float)Math.PI * 2 * numToAdd;
+                int numToAdd = (int) Math.Ceiling((-theta) / (Math.PI * 2));
+                return theta + (float) Math.PI * 2 * numToAdd;
             }
             else if (theta >= Math.PI * 2)
             {
-                int numToReduce = (int)Math.Floor(theta / (Math.PI * 2));
-                return theta - (float)Math.PI * 2 * numToReduce;
+                int numToReduce = (int) Math.Floor(theta / (Math.PI * 2));
+                return theta - (float) Math.PI * 2 * numToReduce;
             }
+
             return theta;
         }
     }

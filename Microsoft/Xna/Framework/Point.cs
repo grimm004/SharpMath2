@@ -24,7 +24,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 #endregion License
-using System;
 
 #if NOT_MONOGAME
 namespace Microsoft.Xna.Framework
