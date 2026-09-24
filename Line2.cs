@@ -135,8 +135,8 @@ public class Line2
         MinY = Math.Min(Start.Y, End.Y);
         MaxX = Math.Max(Start.X, End.X);
         MaxY = Math.Max(Start.Y, End.Y);
-        Horizontal = Math.Abs(End.Y - Start.Y) <= Math2.DEFAULT_EPSILON;
-        Vertical = Math.Abs(End.X - Start.X) <= Math2.DEFAULT_EPSILON;
+        Horizontal = Math.Abs(End.Y - Start.Y) <= Math2.DefaultEpsilon;
+        Vertical = Math.Abs(End.X - Start.X) <= Math2.DefaultEpsilon;
 
         if (Vertical)
             Slope = float.PositiveInfinity;
@@ -163,10 +163,8 @@ public class Line2
     /// <returns>True if the lines are parallel, false otherwise</returns>
     public static bool Parallel(Line2 line1, Line2 line2)
     {
-        return (
-            Math2.Approximately(line1.Axis, line2.Axis)
-            || Math2.Approximately(line1.Axis, -line2.Axis)
-        );
+        return Math2.Approximately(line1.Axis, line2.Axis)
+               || Math2.Approximately(line1.Axis, -line2.Axis);
     }
 
     /// <summary>
@@ -179,7 +177,7 @@ public class Line2
     /// <returns>True if pt is on the infinite line extension of the segment</returns>
     public static bool AlongInfiniteLine(Line2 line, Vector2 pos, Vector2 pt)
     {
-        float normalPart = Vector2.Dot(pt - pos - line.Start, line.Normal);
+        var normalPart = Vector2.Dot(pt - pos - line.Start, line.Normal);
         return Math2.Approximately(normalPart, 0);
     }
 
@@ -223,25 +221,25 @@ public class Line2
         // To check the finite line, we consider the start of the line
         // the origin. Then the end of the line is line.Magnitude * line.Axis.
 
-        Vector2 lineStart = pos + line.Start;
+        var lineStart = pos + line.Start;
 
-        float normalPart = Math2.Dot(pt - lineStart, line.Normal);
+        var normalPart = Math2.Dot(pt - lineStart, line.Normal);
         if (!Math2.Approximately(normalPart, 0))
             return false;
 
-        float axisPart = Math2.Dot(pt - lineStart, line.Axis);
-        return axisPart > -Math2.DEFAULT_EPSILON 
-               && axisPart < line.Magnitude + Math2.DEFAULT_EPSILON;
+        var axisPart = Math2.Dot(pt - lineStart, line.Axis);
+        return axisPart > -Math2.DefaultEpsilon 
+               && axisPart < line.Magnitude + Math2.DefaultEpsilon;
     }
 
     private static unsafe void FindSortedOverlap(float* projs, bool* isFromLine1)
     {
         // ascending insertion sort while simultaneously updating 
         // isFromLine1
-        for (int i = 0; i < 3; i++)
+        for (var i = 0; i < 3; i++)
         {
-            int best = i;
-            for (int j = i + 1; j < 4; j++)
+            var best = i;
+            for (var j = i + 1; j < 4; j++)
             {
                 if (projs[j] < projs[best])
                 {
@@ -250,10 +248,10 @@ public class Line2
             }
             if (best != i)
             {
-                float projTmp = projs[i];
+                var projTmp = projs[i];
                 projs[i] = projs[best];
                 projs[best] = projTmp;
-                bool isFromLine1Tmp = isFromLine1[i];
+                var isFromLine1Tmp = isFromLine1[i];
                 isFromLine1[i] = isFromLine1[best];
                 isFromLine1[best] = isFromLine1Tmp;
             }
@@ -270,16 +268,16 @@ public class Line2
     /// <returns>The type of intersection</returns>
     public static unsafe LineInterType CheckCoincidentIntersectionType(Line2 a, Line2 b, Vector2 pos1, Vector2 pos2)
     {
-        Vector2 relOrigin = a.Start + pos1;
+        var relOrigin = a.Start + pos1;
 
-        float* projs = stackalloc float[4] {
+        var projs = stackalloc float[4] {
             0,
             a.Magnitude,
-            Math2.Dot((b.Start + pos2) - relOrigin, a.Axis),
-            Math2.Dot((b.End + pos2) - relOrigin, a.Axis)
+            Math2.Dot(b.Start + pos2 - relOrigin, a.Axis),
+            Math2.Dot(b.End + pos2 - relOrigin, a.Axis)
         };
 
-        bool* isFromLine1 = stackalloc bool[4] {
+        var isFromLine1 = stackalloc bool[4] {
             true,
             true,
             false,
@@ -307,7 +305,7 @@ public class Line2
     /// <returns>If line1 intersects line2</returns>
     public static bool Intersects(Line2 line1, Line2 line2, Vector2 pos1, Vector2 pos2, bool strict)
     {
-        if (!Parallel(line1, line2)) return GetIntersection(line1, line2, pos1, pos2, strict, out Vector2 _);
+        if (!Parallel(line1, line2)) return GetIntersection(line1, line2, pos1, pos2, strict, out var _);
             
         if (!AlongInfiniteLine(line1, pos1, line2.Start + pos2))
             return false;
@@ -342,31 +340,29 @@ public class Line2
         // Bezier lines to skip the vertical case
         // https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
 
-        float x1 = line1.Start.X + pos1.X;
-        float x2 = line1.End.X + pos1.X;
-        float x3 = line2.Start.X + pos2.X;
-        float x4 = line2.End.X + pos2.X;
-        float y1 = line1.Start.Y + pos1.Y;
-        float y2 = line1.End.Y + pos1.Y;
-        float y3 = line2.Start.Y + pos2.Y;
-        float y4 = line2.End.Y + pos2.Y;
+        var x1 = line1.Start.X + pos1.X;
+        var x2 = line1.End.X + pos1.X;
+        var x3 = line2.Start.X + pos2.X;
+        var x4 = line2.End.X + pos2.X;
+        var y1 = line1.Start.Y + pos1.Y;
+        var y2 = line1.End.Y + pos1.Y;
+        var y3 = line2.Start.Y + pos2.Y;
+        var y4 = line2.End.Y + pos2.Y;
 
-        float det = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+        var det = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
         // we assume det != 0 (lines not parallel)
 
-        var t = (
-            ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / det
-        );
+        var t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / det;
 
         pt = new Vector2(x1 + (x2 - x1) * t, y1 + (y2 - y1) * t);
 
-        float min = strict ? Math2.DEFAULT_EPSILON : -Math2.DEFAULT_EPSILON;
-        float max = 1 - min;
+        var min = strict ? Math2.DefaultEpsilon : -Math2.DefaultEpsilon;
+        var max = 1 - min;
 
         if (t < min || t > max)
             return false;
 
-        float u = -(
+        var u = -(
             ((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / det
         );
         return u >= min && u <= max;
@@ -403,16 +399,16 @@ public class Line2
             return false;
         }
 
-        Vector2 relOrigin = a.Start + pos1;
+        var relOrigin = a.Start + pos1;
 
-        float* projs = stackalloc float[4] {
+        var projs = stackalloc float[4] {
             0,
             a.Magnitude,
-            Math2.Dot((b.Start + pos2) - relOrigin, a.Axis),
-            Math2.Dot((b.End + pos2) - relOrigin, a.Axis)
+            Math2.Dot(b.Start + pos2 - relOrigin, a.Axis),
+            Math2.Dot(b.End + pos2 - relOrigin, a.Axis)
         };
 
-        bool* isFromLine1 = stackalloc bool[4] {
+        var isFromLine1 = stackalloc bool[4] {
             true,
             true,
             false,
@@ -458,9 +454,9 @@ public class Line2
         // the nearest point on the line to the given pt, then just
         // calculate the distance normally.
 
-        Vector2 relPt = pt - line.Start - pos;
+        var relPt = pt - line.Start - pos;
 
-        float axisPart = Math2.Dot(relPt, line.Axis);
+        var axisPart = Math2.Dot(relPt, line.Axis);
         float nearestAxisPart;
         if (axisPart < 0)
             nearestAxisPart = 0;
@@ -469,7 +465,7 @@ public class Line2
         else
             nearestAxisPart = axisPart;
 
-        Vector2 nearestOnLine = line.Start + pos + nearestAxisPart * line.Axis;
+        var nearestOnLine = line.Start + pos + nearestAxisPart * line.Axis;
         return (pt - nearestOnLine).Length();
     }
 

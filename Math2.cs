@@ -12,7 +12,7 @@ public class Math2
     /// <summary>
     /// Default epsilon
     /// </summary>
-    public const float DEFAULT_EPSILON = 0.001f;
+    public const float DefaultEpsilon = 0.001f;
 
     /// <summary>
     /// Determines if v1, v2, and v3 are collinear
@@ -22,7 +22,7 @@ public class Math2
     /// <param name="v3">Vector 3</param>
     /// <param name="epsilon">How close is close enough</param>
     /// <returns>If v1, v2, v3 is collinear</returns>
-    public static bool IsOnLine(Vector2 v1, Vector2 v2, Vector2 v3, float epsilon = DEFAULT_EPSILON)
+    public static bool IsOnLine(Vector2 v1, Vector2 v2, Vector2 v3, float epsilon = DefaultEpsilon)
     {
         var fromV1ToV2 = v2 - v1;
         var axis = Vector2.Normalize(fromV1ToV2);
@@ -42,7 +42,7 @@ public class Math2
     /// <param name="pt">The point to test</param>
     /// <param name="epsilon">How close is close enough (not exactly distance)</param>
     /// <returns>True if pt is on the line between v1 and v2, false otherwise</returns>
-    public static bool IsBetweenLine(Vector2 v1, Vector2 v2, Vector2 pt, float epsilon = DEFAULT_EPSILON)
+    public static bool IsBetweenLine(Vector2 v1, Vector2 v2, Vector2 pt, float epsilon = DefaultEpsilon)
     {
         var fromV1ToV2 = v2 - v1;
         var axis = Vector2.Normalize(fromV1ToV2);
@@ -148,7 +148,7 @@ public class Math2
     /// <param name="f1">F1.</param>
     /// <param name="f2">F2.</param>
     /// <param name="epsilon">Epsilon.</param>
-    public static bool Approximately(float f1, float f2, float epsilon = DEFAULT_EPSILON)
+    public static bool Approximately(float f1, float f2, float epsilon = DefaultEpsilon)
     {
         return Math.Abs(f1 - f2) <= epsilon;
     }
@@ -161,7 +161,7 @@ public class Math2
     /// <param name="v1">V1.</param>
     /// <param name="v2">V2.</param>
     /// <param name="epsilon">Epsilon.</param>
-    public static bool Approximately(Vector2 v1, Vector2 v2, float epsilon = DEFAULT_EPSILON)
+    public static bool Approximately(Vector2 v1, Vector2 v2, float epsilon = DefaultEpsilon)
     {
         return Approximately(v1.X, v2.X, epsilon) && Approximately(v1.Y, v2.Y, epsilon);
     }
@@ -190,7 +190,7 @@ public class Math2
     /// <returns>Normal such that vec.X is positive (unless vec.X is 0, in which such that vec.Y is positive)</returns>
     public static Vector2 MakeStandardNormal(Vector2 vec)
     {
-        if (vec.X < -DEFAULT_EPSILON)
+        if (vec.X < -DefaultEpsilon)
             return -vec;
 
         if (Approximately(vec.X, 0) && vec.Y < 0)

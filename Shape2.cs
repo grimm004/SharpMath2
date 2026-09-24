@@ -24,7 +24,7 @@ public class Shape2
     public static bool Intersects(Polygon2 poly, Rect2 rect, Vector2 pos1, Vector2 pos2, Rotation2 rot1, bool strict)
     {
         bool checkedX = false, checkedY = false;
-        for (int i = 0; i < poly.Normals.Count; i++)
+        for (var i = 0; i < poly.Normals.Count; i++)
         {
             var norm = Math2.Rotate(poly.Normals[i], Vector2.Zero, rot1);
             if (!IntersectsAlongAxis(poly, rect, pos1, pos2, rot1, strict, norm))
@@ -58,10 +58,10 @@ public class Shape2
     {
         bool checkedX = false, checkedY = false;
 
-        Vector2 bestAxis = Vector2.Zero;
-        float bestMagn = float.MaxValue;
+        var bestAxis = Vector2.Zero;
+        var bestMagn = float.MaxValue;
 
-        for (int i = 0; i < poly.Normals.Count; i++)
+        for (var i = 0; i < poly.Normals.Count; i++)
         {
             var norm = Math2.Rotate(poly.Normals[i], Vector2.Zero, rot1);
             var mtv = IntersectMtvAlongAxis(poly, rect, pos1, pos2, rot1, norm);
@@ -268,10 +268,10 @@ public class Shape2
         // The worst case performance is related to 2x the number of vertices of the polygon, the same speed
         // as for 2 polygons of equal number of vertices.
 
-        HashSet<Vector2> checkedAxis = new HashSet<Vector2>();
+        var checkedAxis = new HashSet<Vector2>();
 
-        Vector2 bestAxis = Vector2.Zero;
-        float shortestOverlap = float.MaxValue;
+        var bestAxis = Vector2.Zero;
+        var shortestOverlap = float.MaxValue;
 
         Func<Vector2, bool> checkAxis = (axis) =>
         {
@@ -296,9 +296,9 @@ public class Shape2
         };
 
         var circleCenter = new Vector2(pos2.X + circle.Radius, pos2.Y + circle.Radius);
-        int last = poly.Vertices.Length - 1;
+        var last = poly.Vertices.Length - 1;
         var lastVec = Math2.Rotate(poly.Vertices[last], poly.Center, rot1) + pos1;
-        for(int curr = 0; curr < poly.Vertices.Length; curr++)
+        for (var curr = 0; curr < poly.Vertices.Length; curr++)
         {
             var currVec = Math2.Rotate(poly.Vertices[curr], poly.Center, rot1) + pos1;
 
@@ -310,7 +310,6 @@ public class Shape2
             if (!checkAxis(Vector2.Normalize(Math2.Perpendicular(currVec - lastVec))))
                 return null;
 
-            last = curr;
             lastVec = currVec;
         }
 
@@ -398,10 +397,10 @@ public class Shape2
     public static Tuple<Vector2, float> IntersectMtv(Circle2 circle, Rect2 rect, Vector2 pos1, Vector2 pos2)
     {
         // Same as polygon rect, just converted to rects points
-        HashSet<Vector2> checkedAxis = new HashSet<Vector2>();
+        var checkedAxis = new HashSet<Vector2>();
 
-        Vector2 bestAxis = Vector2.Zero;
-        float shortestOverlap = float.MaxValue;
+        var bestAxis = Vector2.Zero;
+        var shortestOverlap = float.MaxValue;
 
         Func<Vector2, bool> checkAxis = (axis) =>
         {
@@ -426,11 +425,10 @@ public class Shape2
         };
 
         var circleCenter = new Vector2(pos1.X + circle.Radius, pos1.Y + circle.Radius);
-        int last = 4;
         var lastVec = rect.UpperRight + pos2;
-        for (int curr = 0; curr < 4; curr++)
+        for (var curr = 0; curr < 4; curr++)
         {
-            Vector2 currVec = Vector2.Zero;
+            var currVec = Vector2.Zero;
             switch(curr)
             {
                 case 0:
@@ -455,7 +453,6 @@ public class Shape2
             if (!checkAxis(Vector2.Normalize(Math2.Perpendicular(currVec - lastVec))))
                 return null;
 
-            last = curr;
             lastVec = currVec;
         }
 
@@ -496,7 +493,7 @@ public class Shape2
         float min = 0;
         float max = 0;
 
-        for (int i = 0; i < points.Length; i++)
+        for (var i = 0; i < points.Length; i++)
         {
             var polyPt = Math2.Rotate(points[i], center, rot);
             var tmp = Math2.Dot(polyPt.X + pos.X, polyPt.Y + pos.Y, axis.X, axis.Y);
@@ -524,7 +521,7 @@ public class Shape2
     /// <returns>The projectino of the polygon comprised of points at pos along axis</returns>
     protected unsafe static AxisAlignedLine2 ProjectAlongAxis(Vector2 axis, Vector2 pos, Vector2[] points)
     {
-        int len = points.Length;
+        var len = points.Length;
         if (len == 0)
             return new AxisAlignedLine2(axis, 0, 0);
 
@@ -534,9 +531,9 @@ public class Shape2
         {
             min = axis.X * (pt[0].X + pos.X) + axis.Y * (pt[0].Y + pos.Y);
             max = min;
-            for (int i = 1; i < len; i++)
+            for (var i = 1; i < len; i++)
             {
-                float tmp = axis.X * (pt[i].X + pos.X) + axis.Y * (pt[i].Y + pos.Y);
+                var tmp = axis.X * (pt[i].X + pos.X) + axis.Y * (pt[i].Y + pos.Y);
 
                 if (tmp < min)
                     min = tmp;
@@ -645,20 +642,19 @@ public class Shape2
         // closest point is less than the start, OR the start is greater than the end and
         // closest point is greater than the end.
 
-        var closestEdge = Vector2.Zero;
+        Vector2 closestEdge;
         if (lineStartProjectedOntoLineAxis < lineEndProjectedOntoLineAxis)
-            closestEdge = (closestPointProjectedOntoLineAxis <= lineStartProjectedOntoLineAxis) ? actualLine.Start : actualLine.End;
+            closestEdge = closestPointProjectedOntoLineAxis <= lineStartProjectedOntoLineAxis ? actualLine.Start : actualLine.End;
         else
-            closestEdge = (closestPointProjectedOntoLineAxis >= lineEndProjectedOntoLineAxis) ? actualLine.Start : actualLine.End;
+            closestEdge = closestPointProjectedOntoLineAxis >= lineEndProjectedOntoLineAxis ? actualLine.Start : actualLine.End;
 
         // Step 5
         // Circle->Point intersection for closestEdge
 
         var distToCircleFromClosestEdgeSq = (circleCenter - closestEdge).LengthSquared();
         if (strict)
-            return distToCircleFromClosestEdgeSq < (circle.Radius * circle.Radius);
-        else
-            return distToCircleFromClosestEdgeSq <= (circle.Radius * circle.Radius);
+            return distToCircleFromClosestEdgeSq < circle.Radius * circle.Radius;
+        return distToCircleFromClosestEdgeSq <= circle.Radius * circle.Radius;
 
         // If you had trouble following, see the horizontal and vertical cases which are the same process but the projections
         // are simpler
@@ -703,17 +699,16 @@ public class Shape2
         // Step 4 - Find edgeClosest
         float edgeClosestX;
         if (line.Start.X < line.End.X)
-            edgeClosestX = (closestPointX <= line.Start.X) ? line.Start.X : line.End.X;
+            edgeClosestX = closestPointX <= line.Start.X ? line.Start.X : line.End.X;
         else
-            edgeClosestX = (closestPointX >= line.Start.X) ? line.Start.X : line.End.X;
+            edgeClosestX = closestPointX >= line.Start.X ? line.Start.X : line.End.X;
 
         // Step 5 - Circle-point intersection on closest point
         var distClosestEdgeToCircleSq = new Vector2(circleCenter.X - edgeClosestX, circleCenter.Y - lineY).LengthSquared();
 
         if (strict)
             return distClosestEdgeToCircleSq < circle.Radius * circle.Radius;
-        else
-            return distClosestEdgeToCircleSq <= circle.Radius * circle.Radius;
+        return distClosestEdgeToCircleSq <= circle.Radius * circle.Radius;
     }
 
     /// <summary>
@@ -755,17 +750,16 @@ public class Shape2
         // Step 4 - Find edgeClosest
         float edgeClosestY;
         if (line.Start.Y < line.End.Y)
-            edgeClosestY = (closestPointY <= line.Start.Y) ? line.Start.Y : line.End.Y;
+            edgeClosestY = closestPointY <= line.Start.Y ? line.Start.Y : line.End.Y;
         else
-            edgeClosestY = (closestPointY >= line.Start.Y) ? line.Start.Y : line.End.Y;
+            edgeClosestY = closestPointY >= line.Start.Y ? line.Start.Y : line.End.Y;
 
         // Step 5 - Circle-point intersection on closest point
         var distClosestEdgeToCircleSq = new Vector2(circleCenter.X - lineX, circleCenter.Y - edgeClosestY).LengthSquared();
 
         if (strict)
             return distClosestEdgeToCircleSq < circle.Radius * circle.Radius;
-        else
-            return distClosestEdgeToCircleSq <= circle.Radius * circle.Radius;
+        return distClosestEdgeToCircleSq <= circle.Radius * circle.Radius;
     }
     #region NoRotation
     /// <summary>

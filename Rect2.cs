@@ -61,9 +61,9 @@ public class Rect2 : Shape2
     /// <exception cref="ArgumentException">If min and max do not make a box</exception>
     public Rect2(Vector2 min, Vector2 max)
     {
-        float area = (max.X - min.X) * (max.Y - min.Y);
-        if(area > -Math2.DEFAULT_EPSILON && area < Math2.DEFAULT_EPSILON)
-            throw new ArgumentException($"min={min}, max={max} - that's a line or a point, not a box (area below epsilon {Math2.DEFAULT_EPSILON} (got {area}))");
+        var area = (max.X - min.X) * (max.Y - min.Y);
+        if(area > -Math2.DefaultEpsilon && area < Math2.DefaultEpsilon)
+            throw new ArgumentException($"min={min}, max={max} - that's a line or a point, not a box (area below epsilon {Math2.DefaultEpsilon} (got {area}))");
 
         float tmpX1 = min.X, tmpX2 = max.X;
         float tmpY1 = min.Y, tmpY2 = max.Y;
@@ -149,7 +149,7 @@ public class Rect2 : Shape2
     /// <returns>true if the poly is contained in box, false otherwise</returns>
     public static bool Contains(Rect2 box, Polygon2 poly, Vector2 boxPos, Vector2 polyPos, bool strict)
     {
-        return Contains(box, poly.AABB, boxPos, polyPos, strict);
+        return Contains(box, poly.Aabb, boxPos, polyPos, strict);
     }
 
     /// <summary>

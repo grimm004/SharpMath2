@@ -107,9 +107,8 @@ public class AxisAlignedLine2
         }
 
         if (strict)
-            return (min1 <= min2 && max1 > min2 + Math2.DEFAULT_EPSILON) || (min2 <= min1 && max2 > min1 + Math2.DEFAULT_EPSILON);
-        else
-            return (min1 <= min2 && max1 > min2 - Math2.DEFAULT_EPSILON) || (min2 <= min1 && max2 > min1 - Math2.DEFAULT_EPSILON);
+            return (min1 <= min2 && max1 > min2 + Math2.DefaultEpsilon) || (min2 <= min1 && max2 > min1 + Math2.DefaultEpsilon);
+        return (min1 <= min2 && max1 > min2 - Math2.DefaultEpsilon) || (min2 <= min1 && max2 > min1 - Math2.DefaultEpsilon);
     }
 
     /// <summary>
@@ -138,7 +137,7 @@ public class AxisAlignedLine2
 
         if (min1 <= min2 && max1 > min2)
             return min2 - max1;
-        else if (min2 <= min1 && max2 > min1)
+        if (min2 <= min1 && max2 > min1)
             return max2 - min1;
         return null;
     }
@@ -163,8 +162,7 @@ public class AxisAlignedLine2
 
         if (strict)
             return min < point && max > point;
-        else
-            return min <= point && max >= point;
+        return min <= point && max >= point;
     }
 
     /// <summary>
@@ -211,10 +209,9 @@ public class AxisAlignedLine2
 
         if (point < min)
             return min - point;
-        else if (point > max)
+        if (point > max)
             return point - max;
-        else
-            return null;
+        return null;
     }
 
     /// <summary>
@@ -245,15 +242,14 @@ public class AxisAlignedLine2
         {
             if (max1 < min2)
                 return min2 - max1;
-            else
-                return null;
+
+            return null;
         }
-        else if (min2 < min1)
+
+        if (min2 < min1)
         {
             if (max2 < min1)
                 return min1 - max2;
-            else
-                return null;
         }
 
         return null;

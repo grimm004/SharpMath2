@@ -63,7 +63,7 @@ public struct Rotation2
     /// <param name="r2">Second rotation</param>
     /// <returns>if r1 and r2 are the same logical rotation</returns>
     public static bool operator ==(Rotation2 r1, Rotation2 r2) =>
-        Math.Abs(r1.Theta - r2.Theta) < Math2.DEFAULT_EPSILON;
+        Math.Abs(r1.Theta - r2.Theta) < Math2.DefaultEpsilon;
 
     /// <summary>
     /// Determine if the two rotations are not the same
@@ -72,7 +72,7 @@ public struct Rotation2
     /// <param name="r2">second rotation</param>
     /// <returns>if r1 and r2 are not the same logical rotation</returns>
     public static bool operator !=(Rotation2 r1, Rotation2 r2) =>
-        Math.Abs(r1.Theta - r2.Theta) > Math2.DEFAULT_EPSILON;
+        Math.Abs(r1.Theta - r2.Theta) > Math2.DefaultEpsilon;
 
     /// <summary>
     /// Determine if obj is a rotation that is logically equal to this one
@@ -114,12 +114,13 @@ public struct Rotation2
     {
         if (theta < 0)
         {
-            int numToAdd = (int) Math.Ceiling((-theta) / (Math.PI * 2));
+            var numToAdd = (int) Math.Ceiling(-theta / (Math.PI * 2));
             return theta + (float) Math.PI * 2 * numToAdd;
         }
-        else if (theta >= Math.PI * 2)
+
+        if (theta >= Math.PI * 2)
         {
-            int numToReduce = (int) Math.Floor(theta / (Math.PI * 2));
+            var numToReduce = (int) Math.Floor(theta / (Math.PI * 2));
             return theta - (float) Math.PI * 2 * numToReduce;
         }
 

@@ -22,7 +22,7 @@ public class Triangle2
     /// than 1 and each component is positive, the point is in the
     /// triangle.
     /// </summary>
-    private float[] InvContainsBasis;
+    private float[] _invContainsBasis;
 
     /// <summary>
     /// The centroid of the triangle
@@ -49,23 +49,23 @@ public class Triangle2
     {
         Vertices = vertices;
 
-        Vector2 vertSum = Vector2.Zero;
-        for(int i = 0; i < 3; i++)
+        var vertSum = Vector2.Zero;
+        for(var i = 0; i < 3; i++)
         {
             vertSum += vertices[i];
         }
 
         Center = vertSum / 3.0f;
-        float a = vertices[1].X - vertices[0].X;
-        float b = vertices[2].X - vertices[0].X;
-        float c = vertices[1].Y - vertices[0].Y;
-        float d = vertices[2].Y - vertices[0].Y;
+        var a = vertices[1].X - vertices[0].X;
+        var b = vertices[2].X - vertices[0].X;
+        var c = vertices[1].Y - vertices[0].Y;
+        var d = vertices[2].Y - vertices[0].Y;
 
-        float det = a * d - b * c;
+        var det = a * d - b * c;
         Area = Math.Abs(0.5f * det);
 
-        float invDet = 1 / det;
-        InvContainsBasis =
+        var invDet = 1 / det;
+        _invContainsBasis =
         [
             invDet * d, -invDet * b, 
             -invDet * c, invDet * a
@@ -90,16 +90,16 @@ public class Triangle2
     /// is along an edge of this polygon</returns>
     public static bool Contains(Triangle2 tri, Vector2 pos, Vector2 pt)
     {
-        Vector2 relPt = pt - pos - tri.Vertices[0];
-        float r = tri.InvContainsBasis[0] * relPt.X + tri.InvContainsBasis[1] * relPt.Y;
-        if (r < -Math2.DEFAULT_EPSILON)
+        var relPt = pt - pos - tri.Vertices[0];
+        var r = tri._invContainsBasis[0] * relPt.X + tri._invContainsBasis[1] * relPt.Y;
+        if (r < -Math2.DefaultEpsilon)
             return false;
 
-        float t = tri.InvContainsBasis[2] * relPt.X + tri.InvContainsBasis[3] * relPt.Y;
-        if (t < -Math2.DEFAULT_EPSILON)
+        var t = tri._invContainsBasis[2] * relPt.X + tri._invContainsBasis[3] * relPt.Y;
+        if (t < -Math2.DefaultEpsilon)
             return false;
 
-        return (r + t) < 1 + Math2.DEFAULT_EPSILON;
+        return r + t < 1 + Math2.DefaultEpsilon;
     }
 
     /// <summary>
@@ -113,26 +113,26 @@ public class Triangle2
     /// <returns>True if the given triangle contains the origin, false otherwise</returns>
     public static bool ContainsOrigin(Vector2[] vertices)
     {
-        float a = vertices[1].X - vertices[0].X;
-        float b = vertices[2].X - vertices[0].X;
-        float c = vertices[1].Y - vertices[0].Y;
-        float d = vertices[2].Y - vertices[0].Y;
-        float det = a * d - b * c;
-        float invDet = 1 / det;
+        var a = vertices[1].X - vertices[0].X;
+        var b = vertices[2].X - vertices[0].X;
+        var c = vertices[1].Y - vertices[0].Y;
+        var d = vertices[2].Y - vertices[0].Y;
+        var det = a * d - b * c;
+        var invDet = 1 / det;
         /*{
             invDet * d, -invDet * b,
             -invDet * c, invDet * a
         };*/
 
         // relPt = -vertices[0]
-        float r = (invDet * d) * (-(vertices[0].X)) + (-invDet * b) * (-(vertices[0].Y));
-        if (r < -Math2.DEFAULT_EPSILON)
+        var r = invDet * d * -vertices[0].X + -invDet * b * -vertices[0].Y;
+        if (r < -Math2.DefaultEpsilon)
             return false;
 
-        float t = (-invDet * c) * (-(vertices[0].X)) + (invDet * a) * (-(vertices[0].Y));
-        if (t < -Math2.DEFAULT_EPSILON)
+        var t = -invDet * c * -vertices[0].X + invDet * a * -vertices[0].Y;
+        if (t < -Math2.DefaultEpsilon)
             return false;
 
-        return (r + t) < 1 + Math2.DEFAULT_EPSILON;
+        return r + t < 1 + Math2.DefaultEpsilon;
     }
 }

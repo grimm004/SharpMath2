@@ -29,7 +29,7 @@ public readonly struct Circle2
     /// <param name="c2">The second circle</param>
     /// <returns>If c1 is equal to c2</returns>
     public static bool operator ==(Circle2 c1, Circle2 c2) =>
-        Math.Abs(c1.Radius - c2.Radius) < Math2.DEFAULT_EPSILON;
+        Math.Abs(c1.Radius - c2.Radius) < Math2.DefaultEpsilon;
 
     /// <summary>
     /// Determines if the first circle is not equal to the second circle
@@ -38,7 +38,7 @@ public readonly struct Circle2
     /// <param name="c2">The second circle</param>
     /// <returns>If c1 is not equal to c2</returns>
     public static bool operator !=(Circle2 c1, Circle2 c2) =>
-        Math.Abs(c1.Radius - c2.Radius) > Math2.DEFAULT_EPSILON;
+        Math.Abs(c1.Radius - c2.Radius) > Math2.DefaultEpsilon;
 
     /// <summary>
     /// Determines if this circle is logically the same as the 
@@ -78,8 +78,7 @@ public readonly struct Circle2
 
         if (strict)
             return distSq < circle.Radius * circle.Radius;
-        else
-            return distSq <= circle.Radius * circle.Radius;
+        return distSq <= circle.Radius * circle.Radius;
     }
 
     /// <summary>
@@ -143,8 +142,8 @@ public readonly struct Circle2
     public static Tuple<Vector2, float> IntersectMtv(float radius1, float radius2, Vector2 pos1, Vector2 pos2)
     {
         var betweenVec = pos1 - pos2;
-        betweenVec.X += (radius1 - radius2);
-        betweenVec.Y += (radius1 - radius2);
+        betweenVec.X += radius1 - radius2;
+        betweenVec.Y += radius1 - radius2;
 
         var lengthSq = betweenVec.LengthSquared();
         if (!(lengthSq < (radius1 + radius2) * (radius1 + radius2))) return null;

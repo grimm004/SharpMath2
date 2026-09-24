@@ -43,9 +43,9 @@ public class Polygon2 : Shape2
     /// <summary>
     /// The bounding box.
     /// </summary>
-    public readonly Rect2 AABB;
+    public readonly Rect2 Aabb;
 
-    private float _LongestAxisLength;
+    private float _longestAxisLength;
 
     /// <summary>
     /// The longest line that can be created inside this polygon.
@@ -59,12 +59,12 @@ public class Polygon2 : Shape2
     {
         get
         {
-            if (!(_LongestAxisLength < 0)) return _LongestAxisLength;
-            Vector2[] verts = Vertices;
+            if (!(_longestAxisLength < 0)) return _longestAxisLength;
+            var verts = Vertices;
             float longestAxisLenSq = -1;
             for (int i = 1, len = verts.Length; i < len; i++)
             {
-                for (int j = 0; j < i; j++)
+                for (var j = 0; j < i; j++)
                 {
                     var vec = verts[i] - verts[j];
                     var vecLenSq = vec.LengthSquared();
@@ -72,9 +72,9 @@ public class Polygon2 : Shape2
                         longestAxisLenSq = vecLenSq;
                 }
             }
-            _LongestAxisLength = (float)Math.Sqrt(longestAxisLenSq);
+            _longestAxisLength = (float)Math.Sqrt(longestAxisLenSq);
 
-            return _LongestAxisLength;
+            return _longestAxisLength;
         }
     }
 
@@ -99,7 +99,7 @@ public class Polygon2 : Shape2
 
         Normals = [];
         Vector2 tmp;
-        for (int i = 1; i < vertices.Length; i++)
+        for (var i = 1; i < vertices.Length; i++)
         {
             tmp = Math2.MakeStandardNormal(Vector2.Normalize(Math2.Perpendicular(vertices[i] - vertices[i - 1])));
             if (!Normals.Contains(tmp))
@@ -112,26 +112,26 @@ public class Polygon2 : Shape2
 
         var min = new Vector2(vertices[0].X, vertices[0].Y);
         var max = new Vector2(min.X, min.Y);
-        for (int i = 1; i < vertices.Length; i++)
+        for (var i = 1; i < vertices.Length; i++)
         {
             min.X = Math.Min(min.X, vertices[i].X);
             min.Y = Math.Min(min.Y, vertices[i].Y);
             max.X = Math.Max(max.X, vertices[i].X);
             max.Y = Math.Max(max.Y, vertices[i].Y);
         }
-        AABB = new Rect2(min, max);
+        Aabb = new Rect2(min, max);
 
-        _LongestAxisLength = -1;
+        _longestAxisLength = -1;
 
         // Center, area, and lines
         TrianglePartition = new Triangle2[Vertices.Length - 2];
-        float[] triangleSortKeys = new float[TrianglePartition.Length];
+        var triangleSortKeys = new float[TrianglePartition.Length];
         float area = 0;
         Lines = new Line2[Vertices.Length];
         Lines[0] = new Line2(Vertices[Vertices.Length - 1], Vertices[0]);
         var last = Vertices[0];
         Center = new Vector2(0, 0);
-        for (int i = 1; i < Vertices.Length - 1; i++)
+        for (var i = 1; i < Vertices.Length - 1; i++)
         {
             var next = Vertices[i];
             var next2 = Vertices[i + 1];
@@ -151,33 +151,31 @@ public class Polygon2 : Shape2
         Center /= area;
 
         last = Vertices[Vertices.Length - 1];
-        var centToLast = (last - Center);
+        var centToLast = last - Center;
         var angLast = Rotation2.Standardize((float)Math.Atan2(centToLast.Y, centToLast.X));
         var cwCounter = 0;
         var ccwCounter = 0;
         var foundDefinitiveResult = false;
-        for (int i = 0; i < Vertices.Length; i++)
+        for (var i = 0; i < Vertices.Length; i++)
         {
             var curr = Vertices[i];
-            var centToCurr = (curr - Center);
+            var centToCurr = curr - Center;
             var angCurr = Rotation2.Standardize((float)Math.Atan2(centToCurr.Y, centToCurr.X));
 
 
-            var clockwise = (angCurr < angLast && (angCurr - angLast) < Math.PI) || (angCurr - angLast) > Math.PI;
+            var clockwise = (angCurr < angLast && angCurr - angLast < Math.PI) || angCurr - angLast > Math.PI;
             if (clockwise)
                 cwCounter++;
             else
                 ccwCounter++;
 
             Clockwise = clockwise;
-            if (Math.Abs(angLast - angCurr) > Math2.DEFAULT_EPSILON)
+            if (Math.Abs(angLast - angCurr) > Math2.DefaultEpsilon)
             {
                 foundDefinitiveResult = true;
                 break;
             }
 
-            last = curr;
-            centToLast = centToCurr;
             angLast = angCurr;
         }
         if (!foundDefinitiveResult)
@@ -194,19 +192,19 @@ public class Polygon2 : Shape2
     /// <returns>The actualized polygon</returns>
     public static Vector2[] ActualizePolygon(Polygon2 polygon, Vector2 offset, Rotation2 rotation)
     {
-        int len = polygon.Vertices.Length;
-        Vector2[] result = new Vector2[len];
+        var len = polygon.Vertices.Length;
+        var result = new Vector2[len];
 
         if (rotation != Rotation2.Zero)
         {
-            for (int i = 0; i < len; i++)
+            for (var i = 0; i < len; i++)
             {
                 result[i] = Math2.Rotate(polygon.Vertices[i], polygon.Center, rotation) + offset;
             }
         } else
         {
             // performance sensitive section
-            int i = 0;
+            var i = 0;
             for (; i + 3 < len; i += 4)
             {
                 result[i] = new Vector2(
@@ -307,8 +305,8 @@ public class Polygon2 : Shape2
         {
             // This was a serious performance bottleneck so we speed up the fast case
             HashSet<Vector2> seen = [];
-            Vector2[] poly1Verts = poly1.Vertices;
-            Vector2[] poly2Verts = poly2.Vertices;
+            var poly1Verts = poly1.Vertices;
+            var poly2Verts = poly2.Vertices;
             for (int i = 0, len = poly1.Normals.Count; i < len; i++)
             {
                 var axis = poly1.Normals[i];
@@ -367,10 +365,10 @@ public class Polygon2 : Shape2
     /// <returns>True if the polygons overlap, false if they do not</returns>
     public static unsafe bool IntersectsGjk(Polygon2 poly1, Polygon2 poly2, Vector2 pos1, Vector2 pos2, Rotation2 rot1, Rotation2 rot2, bool strict)
     {
-        Vector2[] verts1 = ActualizePolygon(poly1, pos1, rot1);
-        Vector2[] verts2 = ActualizePolygon(poly2, pos2, rot2);
+        var verts1 = ActualizePolygon(poly1, pos1, rot1);
+        var verts2 = ActualizePolygon(poly2, pos2, rot2);
 
-        Vector2 desiredAxis = new Vector2(
+        var desiredAxis = new Vector2(
             poly1.Center.X + pos1.X - poly2.Center.X - pos2.X,
             poly2.Center.Y + pos1.Y - poly2.Center.Y - pos2.Y
         );
@@ -381,21 +379,21 @@ public class Polygon2 : Shape2
             desiredAxis.Normalize(); // cleanup rounding issues
 
         var simplex = stackalloc Vector2[3];
-        int simplexIndex = -1;
-        bool simplexProper = true;
+        var simplexIndex = -1;
+        var simplexProper = true;
 
         while (true)
         {
             if (simplexIndex < 2) {
                 simplex[++simplexIndex] = CalculateSupport(verts1, verts2, desiredAxis);
 
-                float progressFromOriginTowardDesiredAxis = Math2.Dot(simplex[simplexIndex], desiredAxis);
-                if (progressFromOriginTowardDesiredAxis < -Math2.DEFAULT_EPSILON)
+                var progressFromOriginTowardDesiredAxis = Math2.Dot(simplex[simplexIndex], desiredAxis);
+                if (progressFromOriginTowardDesiredAxis < -Math2.DefaultEpsilon)
                 {
                     return false; // no hope
                 }
 
-                if (progressFromOriginTowardDesiredAxis < Math2.DEFAULT_EPSILON)
+                if (progressFromOriginTowardDesiredAxis < Math2.DefaultEpsilon)
                 {
                     if (Math2.Approximately(simplex[simplexIndex], Vector2.Zero))
                     {
@@ -439,15 +437,15 @@ public class Polygon2 : Shape2
                 }
             }
 
-            Vector2 ac = simplex[0] - simplex[2];
-            Vector2 ab = simplex[1] - simplex[2];
-            Vector2 ao = -simplex[2];
+            var ac = simplex[0] - simplex[2];
+            var ab = simplex[1] - simplex[2];
+            var ao = -simplex[2];
 
-            Vector2 acPerp = Math2.TripleCross(ac, ab);
+            var acPerp = Math2.TripleCross(ac, ab);
             acPerp.Normalize(); // resolve rounding issues
-            float amountTowardsOriginAC = Math2.Dot(acPerp, ao);
+            var amountTowardsOriginAc = Math2.Dot(acPerp, ao);
 
-            if (amountTowardsOriginAC < -Math2.DEFAULT_EPSILON)
+            if (amountTowardsOriginAc < -Math2.DefaultEpsilon)
             {
                 // We detected that the origin is in the AC region
                 desiredAxis = -acPerp;
@@ -455,17 +453,17 @@ public class Polygon2 : Shape2
             }
             else
             {
-                if (amountTowardsOriginAC < Math2.DEFAULT_EPSILON)
+                if (amountTowardsOriginAc < Math2.DefaultEpsilon)
                 {
                     simplexProper = false;
                 }
 
                 // Could still be within the triangle.
-                Vector2 abPerp = Math2.TripleCross(ab, ac);
+                var abPerp = Math2.TripleCross(ab, ac);
                 abPerp.Normalize(); // resolve rounding issues
 
-                float amountTowardsOriginAB = Math2.Dot(abPerp, ao);
-                if (amountTowardsOriginAB < -Math2.DEFAULT_EPSILON)
+                var amountTowardsOriginAb = Math2.Dot(abPerp, ao);
+                if (amountTowardsOriginAb < -Math2.DefaultEpsilon)
                 {
                     // We detected that the origin is in the AB region
                     simplex[0] = simplex[1];
@@ -474,7 +472,7 @@ public class Polygon2 : Shape2
                 }
                 else
                 {
-                    if (amountTowardsOriginAB < Math2.DEFAULT_EPSILON)
+                    if (amountTowardsOriginAb < Math2.DefaultEpsilon)
                     {
                         simplexProper = false;
                     }
@@ -491,7 +489,7 @@ public class Polygon2 : Shape2
                     // we need to check the edges before we can be confident.
 
                     // We'll check edges first.
-                    bool isOnABEdge = false;
+                    var isOnAbEdge = false;
 
                     if (Math2.IsBetweenLine(simplex[0], simplex[2], Vector2.Zero))
                     {
@@ -499,11 +497,11 @@ public class Polygon2 : Shape2
                         // we'll swap B and C so that we're now on the edge
                         // AB, and handle like that case. abPerp and acPerp also swap,
                         // but we don't care about acPerp anymore
-                        Vector2 tmp = simplex[0];
+                        var tmp = simplex[0];
                         simplex[0] = simplex[1];
                         simplex[1] = tmp;
                         abPerp = acPerp;
-                        isOnABEdge = true;
+                        isOnAbEdge = true;
                     }
                     else if (Math2.IsBetweenLine(simplex[0], simplex[1], Vector2.Zero))
                     {
@@ -511,17 +509,17 @@ public class Polygon2 : Shape2
                         // we'll swap A and C so that we're now on the
                         // edge AB, and handle like that case. we'll need to
                         // recalculate abPerp
-                        Vector2 tmp = simplex[2];
+                        var tmp = simplex[2];
                         simplex[2] = simplex[0];
                         simplex[0] = tmp;
                         ab = simplex[1] - simplex[2];
                         ac = simplex[0] - simplex[2];
                         abPerp = Math2.TripleCross(ab, ac);
                         abPerp.Normalize();
-                        isOnABEdge = true;
+                        isOnAbEdge = true;
                     }
 
-                    if (isOnABEdge || Math2.IsBetweenLine(simplex[1], simplex[2], Vector2.Zero))
+                    if (isOnAbEdge || Math2.IsBetweenLine(simplex[1], simplex[2], Vector2.Zero))
                     {
                         // The origin is along the line AB. This means we'll either
                         // have another choice for A that wouldn't have done this,
@@ -545,7 +543,7 @@ public class Polygon2 : Shape2
 
 
                         desiredAxis = -abPerp;
-                        Vector2 ogSimplex2 = simplex[2];
+                        var ogSimplex2 = simplex[2];
 
                         simplex[2] = CalculateSupport(verts1, verts2, desiredAxis);
 
@@ -590,13 +588,13 @@ public class Polygon2 : Shape2
                     // progress check as well, so we'll skip the top of the
                     // loop
 
-                    if (amountTowardsOriginAB < 0)
+                    if (amountTowardsOriginAb < 0)
                     {
                         // in the AB region
                         simplex[0] = simplex[1];
                         desiredAxis = -abPerp;
                     }
-                    else if (amountTowardsOriginAC < 0)
+                    else if (amountTowardsOriginAc < 0)
                     {
                         // in the AC region
                         desiredAxis = -acPerp;
@@ -638,8 +636,8 @@ public class Polygon2 : Shape2
     {
         // We calculate the two supports individually, and the difference will
         // still satisfy the necessary property.
-        int index1 = IndexOfFurthestPoint(verts1, axis);
-        int index2 = IndexOfFurthestPoint(verts2, -axis);
+        var index1 = IndexOfFurthestPoint(verts1, axis);
+        var index2 = IndexOfFurthestPoint(verts2, -axis);
 
         return verts1[index1] - verts2[index2];
     }
@@ -655,11 +653,11 @@ public class Polygon2 : Shape2
     {
         // performance sensitive section
         // force inlining of dots
-        float max = verts[0].X * axis.X + verts[0].Y * axis.Y;
-        int index = 0;
+        var max = verts[0].X * axis.X + verts[0].Y * axis.Y;
+        var index = 0;
         for (int i = 1, len = verts.Length; i < len; i++)
         {
-            float dot = verts[i].X * axis.X + verts[i].Y * axis.Y;
+            var dot = verts[i].X * axis.X + verts[i].Y * axis.Y;
             if (dot > max)
             {
                 max = dot;
@@ -673,13 +671,13 @@ public class Polygon2 : Shape2
     {
         Console.WriteLine("Polygon2 poly1 = new Polygon2(new Vector2[]");
         Console.WriteLine("{");
-        foreach (Vector2 v in poly1.Vertices) {
+        foreach (var v in poly1.Vertices) {
             Console.WriteLine($"  new Vector2({v.X}f, {v.Y}f),");
         }
         Console.WriteLine("});");
         Console.WriteLine("Polygon2 poly2 = new Polygon2(new Vector2[]");
         Console.WriteLine("{");
-        foreach (Vector2 v in poly2.Vertices)
+        foreach (var v in poly2.Vertices)
         {
             Console.WriteLine($"  new Vector2({v.X}f, {v.Y}f),");
         }
@@ -692,7 +690,7 @@ public class Polygon2 : Shape2
 
     public static void DesmosReady(Vector2[] verts)
     {
-        foreach (Vector2 v in verts)
+        foreach (var v in verts)
         {
             Console.Write($"({v.X},{v.Y}),");
         }
@@ -712,8 +710,8 @@ public class Polygon2 : Shape2
     /// <returns>MTV to move poly1 to prevent intersection with poly2</returns>
     public static Tuple<Vector2, float> IntersectMtv(Polygon2 poly1, Polygon2 poly2, Vector2 pos1, Vector2 pos2, Rotation2 rot1, Rotation2 rot2)
     {
-        Vector2 bestAxis = Vector2.Zero;
-        float bestMagn = float.MaxValue;
+        var bestAxis = Vector2.Zero;
+        var bestMagn = float.MaxValue;
 
         foreach (var norm in poly1.Normals.Select((v) => Tuple.Create(v, rot1)).Union(poly2.Normals.Select((v) => Tuple.Create(v, rot2))))
         {
@@ -721,7 +719,7 @@ public class Polygon2 : Shape2
             var mtv = IntersectMtvAlongAxis(poly1, poly2, pos1, pos2, rot1, rot2, axis);
             if (!mtv.HasValue)
                 return null;
-            else if (Math.Abs(mtv.Value) < Math.Abs(bestMagn))
+            if (Math.Abs(mtv.Value) < Math.Abs(bestMagn))
             {
                 bestAxis = axis;
                 bestMagn = mtv.Value;
@@ -870,7 +868,7 @@ public class Polygon2 : Shape2
         {
             foreach (var vert2 in poly2.Vertices)
             {
-                var roughAxis = ((vert2 + pos2) - (vert + pos1));
+                var roughAxis = vert2 + pos2 - (vert + pos1);
                 roughAxis.Normalize();
                 yield return Math2.MakeStandardNormal(roughAxis);
             }
