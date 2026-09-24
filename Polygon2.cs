@@ -97,7 +97,7 @@ public class Polygon2 : Shape2
     {
         Vertices = vertices ?? throw new ArgumentNullException(nameof(vertices));
 
-        Normals = new List<Vector2>();
+        Normals = [];
         Vector2 tmp;
         for (int i = 1; i < vertices.Length; i++)
         {
@@ -136,7 +136,7 @@ public class Polygon2 : Shape2
             var next = Vertices[i];
             var next2 = Vertices[i + 1];
             Lines[i] = new Line2(last, next);
-            var tri = new Triangle2(new Vector2[] { Vertices[0], next, next2 });
+            var tri = new Triangle2([Vertices[0], next, next2]);
             TrianglePartition[i - 1] = tri;
             triangleSortKeys[i - 1] = -tri.Area;
             area += tri.Area;
@@ -306,7 +306,7 @@ public class Polygon2 : Shape2
         if (rot1 == Rotation2.Zero && rot2 == Rotation2.Zero)
         {
             // This was a serious performance bottleneck so we speed up the fast case
-            HashSet<Vector2> seen = new HashSet<Vector2>();
+            HashSet<Vector2> seen = [];
             Vector2[] poly1Verts = poly1.Vertices;
             Vector2[] poly2Verts = poly2.Vertices;
             for (int i = 0, len = poly1.Normals.Count; i < len; i++)
@@ -989,13 +989,12 @@ public class Polygon2 : Shape2
             var line = poly.Lines[lineIndex];
             if (!Math2.IsOnLine(line.Start, line.End, line.Start + offset))
             {
-                ourLinesAsRects.Add(new Polygon2(new Vector2[]
-                {
+                ourLinesAsRects.Add(new Polygon2([
                     line.Start,
                     line.End,
                     line.End + offset,
                     line.Start + offset
-                }));
+                ]));
             }
         }
 

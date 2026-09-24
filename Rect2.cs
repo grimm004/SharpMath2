@@ -73,10 +73,10 @@ public class Rect2 : Shape2
         max.X = Math.Max(tmpX1, tmpX2);
         max.Y = Math.Max(tmpY1, tmpY2);
 
-        Vertices = new Vector2[]
-        {
+        Vertices =
+        [
             min, new Vector2(max.X, min.Y), max, new Vector2(min.X, max.Y)
-        };
+        ];
 
         Center = new Vector2((Min.X + Max.X) / 2, (Min.Y + Max.Y) / 2);
 

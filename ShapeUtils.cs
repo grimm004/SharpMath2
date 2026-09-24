@@ -17,17 +17,17 @@ public class ShapeUtils
     /// <summary>
     /// A dictionary containing the circle shapes.
     /// </summary>
-    private static Dictionary<Tuple<float, float, float, float>, Polygon2> CircleCache = new Dictionary<Tuple<float, float, float, float>, Polygon2>();
+    private static Dictionary<Tuple<float, float, float, float>, Polygon2> CircleCache = new();
 
     /// <summary>
     /// A dictionary containing the rectangle shapes.
     /// </summary>
-    private static Dictionary<Tuple<float, float, float, float>, Polygon2> RectangleCache = new Dictionary<Tuple<float, float, float, float>, Polygon2>();
+    private static Dictionary<Tuple<float, float, float, float>, Polygon2> RectangleCache = new();
 
     /// <summary>
     /// A dictionary containing the convex polygon shapes.
     /// </summary>
-    private static Dictionary<int, Polygon2> ConvexPolygonCache = new Dictionary<int, Polygon2>();
+    private static Dictionary<int, Polygon2> ConvexPolygonCache = new();
 
 #if !NOT_MONOGAME
     /// <summary>
@@ -80,8 +80,8 @@ public class ShapeUtils
             h[k++] = Points[i];
         }
 
-        Points = h.Take(k - 1).ToList();
-        return ConvexPolygonCache[Key] = new Polygon2(Points.ToArray());
+        Points = [.. h.Take(k - 1)];
+        return ConvexPolygonCache[Key] = new Polygon2([.. Points]);
     }
 #endif
 
@@ -112,12 +112,12 @@ public class ShapeUtils
         if (RectangleCache.ContainsKey(Key))
             return RectangleCache[Key];
 
-        return RectangleCache[Key] = new Polygon2(new[] {
+        return RectangleCache[Key] = new Polygon2([
             new Vector2(x, y),
             new Vector2(x + width, y),
             new Vector2(x + width, y + height),
             new Vector2(x, y + height)
-        });
+        ]);
     }
 
     /// <summary>
@@ -169,6 +169,6 @@ public class ShapeUtils
             verts[i] -= correction;
         }
 
-        return CircleCache[Key] = new Polygon2(verts.ToArray());
+        return CircleCache[Key] = new Polygon2([.. verts]);
     }
 }

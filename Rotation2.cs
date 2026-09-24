@@ -11,7 +11,7 @@ public struct Rotation2
     /// <summary>
     /// Rotation Theta=0
     /// </summary>
-    public static readonly Rotation2 Zero = new Rotation2(0, 1, 0);
+    public static readonly Rotation2 Zero = new(0, 1, 0);
 
     /// <summary>
     /// Theta in radians.

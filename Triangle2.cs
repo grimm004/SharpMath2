@@ -65,18 +65,18 @@ public class Triangle2
         Area = Math.Abs(0.5f * det);
 
         float invDet = 1 / det;
-        InvContainsBasis = new float[]
-        {
+        InvContainsBasis =
+        [
             invDet * d, -invDet * b, 
             -invDet * c, invDet * a
-        };
+        ];
 
-        Edges = new Line2[]
-        {
+        Edges =
+        [
             new Line2(Vertices[0], Vertices[1]),
             new Line2(Vertices[1], Vertices[2]),
             new Line2(Vertices[2], Vertices[0])
-        };
+        ];
     }
 
     /// <summary>
