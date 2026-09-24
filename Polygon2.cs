@@ -106,7 +106,7 @@ public class Polygon2 : Shape2
                 Normals.Add(tmp);
         }
 
-        tmp = Math2.MakeStandardNormal(Vector2.Normalize(Math2.Perpendicular(vertices[0] - vertices[vertices.Length - 1])));
+        tmp = Math2.MakeStandardNormal(Vector2.Normalize(Math2.Perpendicular(vertices[0] - vertices[^1])));
         if (!Normals.Contains(tmp))
             Normals.Add(tmp);
 
@@ -128,7 +128,7 @@ public class Polygon2 : Shape2
         var triangleSortKeys = new float[TrianglePartition.Length];
         float area = 0;
         Lines = new Line2[Vertices.Length];
-        Lines[0] = new Line2(Vertices[Vertices.Length - 1], Vertices[0]);
+        Lines[0] = new Line2(Vertices[^1], Vertices[0]);
         var last = Vertices[0];
         Center = new Vector2(0, 0);
         for (var i = 1; i < Vertices.Length - 1; i++)
@@ -143,14 +143,14 @@ public class Polygon2 : Shape2
             Center += tri.Center * tri.Area;
             last = next;
         }
-        Lines[Vertices.Length - 1] = new Line2(Vertices[Vertices.Length - 2], Vertices[Vertices.Length - 1]);
+        Lines[Vertices.Length - 1] = new Line2(Vertices[^2], Vertices[^1]);
 
         Array.Sort(triangleSortKeys, TrianglePartition);
 
         Area = area;
         Center /= area;
 
-        last = Vertices[Vertices.Length - 1];
+        last = Vertices[^1];
         var centToLast = last - Center;
         var angLast = Rotation2.Standardize((float)Math.Atan2(centToLast.Y, centToLast.X));
         var cwCounter = 0;
@@ -816,7 +816,7 @@ public class Polygon2 : Shape2
          * If this is not true for ANY of the lines, the polygon does not contain the point.
          */
 
-        var last = Math2.Rotate(poly.Vertices[poly.Vertices.Length - 1], poly.Center, rot) + pos;
+        var last = Math2.Rotate(poly.Vertices[^1], poly.Center, rot) + pos;
         for (var i = 0; i < poly.Vertices.Length; i++)
         {
             var curr = Math2.Rotate(poly.Vertices[i], poly.Center, rot) + pos;
