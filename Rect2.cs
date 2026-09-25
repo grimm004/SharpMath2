@@ -62,7 +62,7 @@ public class Rect2 : Shape2
     public Rect2(Vector2 min, Vector2 max)
     {
         var area = (max.X - min.X) * (max.Y - min.Y);
-        if(area > -Math2.DefaultEpsilon && area < Math2.DefaultEpsilon)
+        if(area is > -Math2.DefaultEpsilon and < Math2.DefaultEpsilon)
             throw new ArgumentException($"min={min}, max={max} - that's a line or a point, not a box (area below epsilon {Math2.DefaultEpsilon} (got {area}))");
 
         float tmpX1 = min.X, tmpX2 = max.X;
